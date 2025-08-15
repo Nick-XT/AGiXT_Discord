@@ -10,7 +10,9 @@
     "webhook:register": "node webhook-setup.js register",
     "webhook:list": "node webhook-setup.js list",
     "webhook:delete": "node webhook-setup.js delete",
-    "webhook:help": "node webhook-setup.js help"
+    "webhook:help": "node webhook-setup.js help",
+    "setup": "node integration-setup.js",
+    "test:integration": "node test-integration.js"
   },
   "keywords": [
     "discord",
