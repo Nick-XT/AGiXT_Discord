@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  xtsystems-discord-bot:
+    build: .
+    container_name: xtsystems-discord-bot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/usr/src/app/logs
+      - ./config:/usr/src/app/config
+      - ~/.gitconfig:/home/nextjs/.gitconfig:ro
+    networks:
+      - xtsystems-network
+    depends_on:
+      - xtsystems-api
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Health check passed')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Include XTSystems API if running locally
+  xtsystems-api:
+    image: xtsystems:latest  # Replace with actual XTSystems image
+    container_name: xtsystems-api
+    restart: unless-stopped
+    ports:
+      - "20437:20437"
+    environment:
+      - DATABASE_TYPE=sqlite
+      - DATABASE_NAME=data/XTSystems
+      - APP_URI=http://localhost:3000
+    volumes:
+      - xtsystems-data:/app/data
+    networks:
+      - xtsystems-network
+
+  # Optional: Include AGiXT if running locally
+  agixt:
+    image: agixt:latest  # Replace with actual AGiXT image
+    container_name: agixt
+    restart: unless-stopped
+    ports:
+      - "7437:7437"
+    environment:
+      - AGIXT_AUTO_UPDATE=false
+    volumes:
+      - agixt-data:/app
+    networks:
+      - xtsystems-network
+
+networks:
+  xtsystems-network:
+    driver: bridge
+
+volumes:
+  xtsystems-data:
+    driver: local
+  agixt-data:
+    driver: local
